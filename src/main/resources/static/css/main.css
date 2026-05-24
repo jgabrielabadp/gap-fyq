@@ -1,0 +1,18 @@
+/* Estilos base - se expandirán por fases */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 1rem 2rem;
+    background: #f9f9f9;
+    color: #222;
+}
+
+header {
+    border-bottom: 2px solid #0066cc;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+}
+
+header h1 { margin: 0; color: #0066cc; }
