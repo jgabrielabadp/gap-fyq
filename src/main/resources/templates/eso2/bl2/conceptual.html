@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     Devuelto por:  GET /eso2/bl2/conceptual/ejercicio
+                    GET /eso2/bl2/conceptual  via th:replace en conceptual-page.html
+     Intercambiado: hx-swap="outerHTML" sobre #tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <!-- Cabecera: tipo de ejercicio + botón Siguiente -->
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º ESO · BL2</span>
+            <span th:if="${ejercicio.variant.name() == 'MULTIPLE_CHOICE'}"
+                  class="badge badge-test">Tipo test</span>
+            <span th:unless="${ejercicio.variant.name() == 'MULTIPLE_CHOICE'}"
+                  class="badge badge-clasificacion">Clasificación</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso2/bl2/conceptual/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado del ejercicio.</p>
+    </div>
+
+    <!-- Opciones: un formulario por opción para que HTMX envíe el índice al pulsar -->
+    <div id="form-area">
+        <div class="options-grid">
+            <th:block th:each="opt,stat : ${ejercicio.options}">
+                <form th:attr="hx-post=@{/eso2/bl2/conceptual/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                      hx-target="#form-area"
+                      hx-swap="innerHTML"
+                      class="option-form">
+                    <input type="hidden" name="respuesta" th:value="${stat.index}">
+                    <button type="submit" class="option-btn">
+                        <span class="option-letter"
+                              th:text="${stat.index == 0 ? 'A' :
+                                        stat.index == 1 ? 'B' :
+                                        stat.index == 2 ? 'C' : 'D'}">A</span>
+                        <span class="option-text" th:text="${opt}">Texto de la opción</span>
+                    </button>
+                </form>
+            </th:block>
+        </div>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     Devuelto por:  POST /eso2/bl2/conceptual/ejercicio/{id}/comprobar
+     Intercambiado: hx-swap="innerHTML" sobre #form-area
+     Variables de modelo: correcto (boolean), ejercicio
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <!-- Veredicto -->
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <!-- Respuesta correcta solo cuando falla -->
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:text="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <!-- Justificación teórica -->
+        <details class="explanation-details" open>
+            <summary class="explanation-title">Justificación teórica</summary>
+            <div class="explanation explanation--prose"
+                 th:text="${ejercicio.explanation}">justificación</div>
+        </details>
+
+    </div>
+
+    <!-- Botón Siguiente ejercicio -->
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso2/bl2/conceptual/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
