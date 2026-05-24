@@ -3,18 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAP-FYQ · Física y Química</title>
+    <title>GAP-FYQ · 2º ESO — Bloque 1</title>
+
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+          crossorigin="anonymous">
+
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 </head>
 <body>
-    <header>
-        <h1>GAP · Física y Química</h1>
-        <p>Sistema de ejercicios para Secundaria y Bachillerato (Andalucía)</p>
-    </header>
 
-    <main>
-        <p>Infraestructura inicializada correctamente.</p>
-    </main>
+<header class="page-header">
+    <div class="page-header-inner">
+        <div>
+            <h1 class="page-title">2º ESO &mdash; Bloque 1: La actividad científica</h1>
+            <p class="page-subtitle">Medida de magnitudes &middot; Sistema Internacional de Unidades &middot; Notación científica</p>
+        </div>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{eso2/bl1/ejercicio :: tarjeta}"></div>
+</main>
+
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@2.0.4"
+        integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+        crossorigin="anonymous"></script>
+
+<!-- KaTeX JS + auto-render -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+        crossorigin="anonymous"></script>
+
+<script>
+    const KATEX_OPTIONS = {
+        delimiters: [
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+    };
+
+    // Render inicial de la página completa
+    renderMathInElement(document.body, KATEX_OPTIONS);
+
+    // Re-render tras cada intercambio de fragmento HTMX
+    document.body.addEventListener('htmx:afterSwap', function (e) {
+        renderMathInElement(e.detail.target, KATEX_OPTIONS);
+    });
+</script>
 </body>
 </html>

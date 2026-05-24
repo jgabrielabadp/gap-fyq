@@ -1,18 +1,258 @@
-/* Estilos base - se expandirán por fases */
-*, *::before, *::after { box-sizing: border-box; }
+/* ============================================================
+   GAP-FYQ · main.css
+   ============================================================ */
+
+/* ── Reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
 
 body {
-    font-family: system-ui, sans-serif;
-    margin: 0;
-    padding: 1rem 2rem;
-    background: #f9f9f9;
-    color: #222;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    min-height: 100vh;
+    line-height: 1.6;
 }
 
-header {
-    border-bottom: 2px solid #0066cc;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
+/* ── Header ─────────────────────────────────────────────────── */
+.page-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(30, 58, 138, 0.35);
+}
+.page-header-inner {
+    max-width: 720px;
+    margin: 0 auto;
+}
+.page-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+.page-subtitle {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 0.2rem;
 }
 
-header h1 { margin: 0; color: #0066cc; }
+/* ── Layout ─────────────────────────────────────────────────── */
+.page-main {
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* ── Card ───────────────────────────────────────────────────── */
+.card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 8px 28px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    animation: fadeUp 0.25s ease;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Card header ────────────────────────────────────────────── */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+.card-meta { display: flex; gap: 0.45rem; align-items: center; }
+
+/* ── Badges ─────────────────────────────────────────────────── */
+.badge {
+    display: inline-block;
+    padding: 0.18rem 0.6rem;
+    border-radius: 99px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.badge-curso      { background: #e0f2fe; color: #0369a1; }
+.badge-conversion { background: #ede9fe; color: #6d28d9; }
+.badge-notacion   { background: #fef3c7; color: #92400e; }
+
+/* ── Statement ──────────────────────────────────────────────── */
+.statement-area {
+    padding: 2rem 1.75rem 1.5rem;
+}
+.statement {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.6;
+}
+
+/* ── Answer form ────────────────────────────────────────────── */
+.form-area {
+    padding: 0 1.75rem 1.75rem;
+}
+.input-group {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+.answer-input {
+    flex: 1;
+    padding: 0.65rem 1rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1e293b;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+}
+.answer-input:focus { border-color: #3b82f6; }
+
+.hint {
+    font-size: 0.74rem;
+    color: #94a3b8;
+    margin-top: 0.35rem;
+}
+.hint code {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    background: #f1f5f9;
+    padding: 0 0.25rem;
+    border-radius: 3px;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+    text-decoration: none;
+    line-height: 1;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: #2563eb; color: #fff; }
+.btn-primary:hover { background: #1d4ed8; }
+
+.btn-ghost {
+    background: transparent;
+    color: #64748b;
+    border: 1.5px solid #e2e8f0;
+    font-size: 0.78rem;
+    padding: 0.38rem 0.85rem;
+}
+.btn-ghost:hover { background: #f1f5f9; color: #334155; }
+
+/* ── HTMX spinner ───────────────────────────────────────────── */
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator,
+.htmx-request.htmx-indicator { display: block; }
+
+.spinner {
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* ── Resultado ──────────────────────────────────────────────── */
+.resultado {
+    border-top: 1px solid #e2e8f0;
+    padding: 1.5rem 1.75rem;
+    animation: fadeUp 0.2s ease;
+}
+.resultado-correcto  { border-left: 5px solid #16a34a; background: #f0fdf4; }
+.resultado-incorrecto { border-left: 5px solid #dc2626; background: #fef2f2; }
+
+.verdict {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+.verdict-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.resultado-correcto  .verdict-icon { background: #16a34a; color: #fff; }
+.resultado-incorrecto .verdict-icon { background: #dc2626; color: #fff; }
+
+.verdict-text { font-size: 1.15rem; font-weight: 700; }
+.resultado-correcto   .verdict-text { color: #15803d; }
+.resultado-incorrecto .verdict-text { color: #b91c1c; }
+
+.correct-answer {
+    margin-bottom: 1rem;
+    padding: 0.55rem 0.9rem;
+    background: #fff;
+    border: 1px solid #fca5a5;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #7f1d1d;
+}
+
+/* ── Explicación ────────────────────────────────────────────── */
+.explanation-details {
+    margin-top: 0.75rem;
+}
+.explanation-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.35rem 0;
+    user-select: none;
+}
+.explanation-title:hover { color: #334155; }
+
+.explanation {
+    margin-top: 0.6rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.87rem;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    background: #f8fafc;
+    padding: 1.1rem 1.25rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    overflow-x: auto;
+}
+
+/* KaTeX display math dentro de la explicación */
+.explanation .katex-display {
+    margin: 0.4rem 0;
+}
+
+/* ── Siguiente ejercicio ─────────────────────────────────────── */
+.next-area {
+    border-top: 1px solid #e2e8f0;
+    padding: 1.1rem 1.75rem;
+    background: #f8fafc;
+    display: flex;
+    justify-content: flex-end;
+}
