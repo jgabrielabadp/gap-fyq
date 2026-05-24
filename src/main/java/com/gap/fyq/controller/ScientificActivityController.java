@@ -16,6 +16,14 @@ public class ScientificActivityController {
 
     private final ScientificActivityExerciseService service;
 
+    @GetMapping("")
+    public String page(Model model) {
+        ScientificActivityExercise ejercicio = service.generateAndSave();
+        model.addAttribute("ejercicio", ejercicio);
+        log.debug("BL1 página — ejercicio generado: id={}", ejercicio.getId());
+        return "eso2/bl1/page";
+    }
+
     // HTMX GET — carga un ejercicio nuevo y devuelve solo el fragmento tarjeta
     @GetMapping("/ejercicio")
     public String ejercicio(Model model) {

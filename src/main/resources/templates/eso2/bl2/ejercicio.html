@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Placeholder — vista BL2 pendiente de implementar -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º ESO · BL2</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso2/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">Siguiente &#8594;</button>
+    </div>
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado</p>
+    </div>
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/eso2/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area" hx-swap="innerHTML" class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="Escribe tu respuesta…" autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">Usa coma (,) o punto (.) como separador decimal.</p>
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="resultado">
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+        <details class="explanation-details" open>
+            <summary class="explanation-title">Resolución paso a paso</summary>
+            <div class="explanation" th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+    </div>
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso2/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">Siguiente ejercicio &#8594;</button>
+    </div>
+</div>
+</body>
+</html>

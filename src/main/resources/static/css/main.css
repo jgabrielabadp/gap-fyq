@@ -78,9 +78,11 @@ body {
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
-.badge-curso      { background: #e0f2fe; color: #0369a1; }
-.badge-conversion { background: #ede9fe; color: #6d28d9; }
-.badge-notacion   { background: #fef3c7; color: #92400e; }
+.badge-curso        { background: #e0f2fe; color: #0369a1; }
+.badge-conversion   { background: #ede9fe; color: #6d28d9; }
+.badge-notacion     { background: #fef3c7; color: #92400e; }
+.badge-test         { background: #fff7ed; color: #c2410c; }
+.badge-clasificacion { background: #f0fdf4; color: #15803d; }
 
 /* ── Statement ──────────────────────────────────────────────── */
 .statement-area {
@@ -255,4 +257,240 @@ body {
     background: #f8fafc;
     display: flex;
     justify-content: flex-end;
+}
+
+/* ── Breadcrumb ──────────────────────────────────────────────── */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.45rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+.breadcrumb-link {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+}
+.breadcrumb-link:hover { color: #fff; text-decoration: underline; }
+.breadcrumb-sep { opacity: 0.5; }
+.breadcrumb-current { color: #fff; font-weight: 600; }
+
+/* ── Course grid ─────────────────────────────────────────────── */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+.course-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 2rem 1rem;
+    border-radius: 14px;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.course-card--active {
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 8px 28px rgba(0, 0, 0, 0.07);
+    color: #1e293b;
+}
+.course-card--active:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+.course-card--disabled {
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+.course-label {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+.course-desc {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+.course-badge-soon {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: #f1f5f9;
+    color: #94a3b8;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+}
+
+/* ── Block list ──────────────────────────────────────────────── */
+.block-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.block-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.1rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.block-card--active {
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+    color: #1e293b;
+}
+.block-card--active:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.block-card--disabled {
+    background: #f8fafc;
+    border: 2px dashed #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+.block-num {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #2563eb;
+    min-width: 2.5rem;
+    flex-shrink: 0;
+}
+.block-card--disabled .block-num { color: #cbd5e1; }
+.block-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+.block-title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+.block-desc {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+.block-card--disabled .block-desc { color: #cbd5e1; }
+
+/* Tarjeta de bloque con sub-secciones (ej: BL2 Cuantitativa + Conceptual) */
+.block-card--group {
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+}
+
+.block-card-top {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.block-sublinks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 3.75rem; /* alinea con el texto de block-info (2.5rem num + 1.25rem gap) */
+}
+
+.block-sublink {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 7px;
+    text-decoration: none;
+    color: #1e293b;
+    transition: background 0.12s;
+}
+.block-sublink:hover { background: #eff6ff; }
+
+.block-sublink-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #2563eb;
+    white-space: nowrap;
+}
+.block-sublink:hover .block-sublink-label { color: #1d4ed8; }
+
+.block-sublink-desc {
+    font-size: 0.76rem;
+    color: #64748b;
+}
+
+/* ── Option buttons (ejercicios conceptuales) ────────────────── */
+.options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0 1.75rem 1.75rem;
+}
+
+.option-form {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.option-btn {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    color: #1e293b;
+    text-align: left;
+    line-height: 1.45;
+    transition: background 0.12s, border-color 0.12s, transform 0.08s;
+    font-family: inherit;
+}
+.option-btn:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+.option-btn:active { transform: scale(0.993); }
+
+.option-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    background: #f1f5f9;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #475569;
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+    transition: background 0.12s, color 0.12s;
+}
+.option-btn:hover .option-letter {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.option-text { flex: 1; }
+
+/* Explicación en prosa (sin monoespaciado ni pre-wrap) */
+.explanation--prose {
+    font-family: inherit;
+    font-size: 0.93rem;
+    line-height: 1.75;
+    white-space: normal;
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' · GAP-FYQ'">GAP-FYQ</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<th:block th:fragment="scripts">
+    <script src="https://unpkg.com/htmx.org@2.0.4"
+            integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"
+            crossorigin="anonymous"></script>
+    <script>
+        const KATEX_OPTIONS = {
+            delimiters: [
+                {left: '\\(', right: '\\)', display: false},
+                {left: '\\[', right: '\\]', display: true}
+            ],
+            throwOnError: false
+        };
+        renderMathInElement(document.body, KATEX_OPTIONS);
+        document.body.addEventListener('htmx:afterSwap', function (e) {
+            renderMathInElement(e.detail.target, KATEX_OPTIONS);
+        });
+    </script>
+</th:block>
+</body>
+</html>
