@@ -78,11 +78,14 @@ body {
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
-.badge-curso        { background: #e0f2fe; color: #0369a1; }
-.badge-conversion   { background: #ede9fe; color: #6d28d9; }
-.badge-notacion     { background: #fef3c7; color: #92400e; }
-.badge-test         { background: #fff7ed; color: #c2410c; }
+.badge-curso         { background: #e0f2fe; color: #0369a1; }
+.badge-conversion    { background: #ede9fe; color: #6d28d9; }
+.badge-notacion      { background: #fef3c7; color: #92400e; }
+.badge-test          { background: #fff7ed; color: #c2410c; }
 .badge-clasificacion { background: #f0fdf4; color: #15803d; }
+.badge-fisico-quimico { background: #ccfbf1; color: #0f766e; }
+.badge-reactivos      { background: #fff1f2; color: #be123c; }
+.badge-sociedad       { background: #eef2ff; color: #4338ca; }
 
 /* ── Statement ──────────────────────────────────────────────── */
 .statement-area {
