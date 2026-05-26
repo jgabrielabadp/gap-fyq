@@ -94,6 +94,9 @@ body {
 .badge-sostenibilidad    { background: #f0fdf4; color: #065f46; }
 .badge-error             { background: #fee2e2; color: #991b1b; }
 .badge-grafica           { background: #f5f3ff; color: #5b21b6; }
+.badge-porcentaje        { background: #dcfce7; color: #166534; }
+.badge-concentracion     { background: #ccfbf1; color: #0f766e; }
+.badge-gases             { background: #e0f2fe; color: #075985; }
 
 /* ── Statement ──────────────────────────────────────────────── */
 .statement-area {
