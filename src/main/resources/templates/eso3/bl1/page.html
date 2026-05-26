@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL1 · La actividad científica')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/eso3" class="breadcrumb-link">3º ESO</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL1</span>
+        </nav>
+        <h1 class="page-title">3º ESO &mdash; Bloque 1: La actividad científica</h1>
+        <p class="page-subtitle">Cálculo de errores &middot; Conversiones de magnitudes derivadas &middot; Proporcionalidad en gráficas</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{eso3/bl1/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>

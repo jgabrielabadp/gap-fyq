@@ -92,6 +92,8 @@ body {
 .badge-trabajo           { background: #fef9c3; color: #854d0e; }
 .badge-cinetica          { background: #eff6ff; color: #1e40af; }
 .badge-sostenibilidad    { background: #f0fdf4; color: #065f46; }
+.badge-error             { background: #fee2e2; color: #991b1b; }
+.badge-grafica           { background: #f5f3ff; color: #5b21b6; }
 
 /* ── Statement ──────────────────────────────────────────────── */
 .statement-area {

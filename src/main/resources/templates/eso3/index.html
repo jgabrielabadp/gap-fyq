@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('3º ESO')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">3º ESO</span>
+        </nav>
+        <h1 class="page-title">3º ESO &mdash; Física y Química</h1>
+        <p class="page-subtitle">Selecciona un bloque temático</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div class="block-list">
+        <a href="/eso3/bl1" class="block-card block-card--active">
+            <span class="block-num">BL1</span>
+            <div class="block-info">
+                <span class="block-title">La actividad científica</span>
+                <span class="block-desc">Cálculo de errores &middot; Conversiones avanzadas &middot; Proporcionalidad en gráficas</span>
+            </div>
+        </a>
+        <div class="block-card block-card--disabled">
+            <span class="block-num">BL2</span>
+            <div class="block-info">
+                <span class="block-title">La materia y sus propiedades</span>
+                <span class="course-badge-soon">Próximamente</span>
+            </div>
+        </div>
+        <div class="block-card block-card--disabled">
+            <span class="block-num">BL3</span>
+            <div class="block-info">
+                <span class="block-title">Reacciones químicas</span>
+                <span class="course-badge-soon">Próximamente</span>
+            </div>
+        </div>
+        <div class="block-card block-card--disabled">
+            <span class="block-num">BL4</span>
+            <div class="block-info">
+                <span class="block-title">El movimiento</span>
+                <span class="course-badge-soon">Próximamente</span>
+            </div>
+        </div>
+        <div class="block-card block-card--disabled">
+            <span class="block-num">BL5</span>
+            <div class="block-info">
+                <span class="block-title">Las fuerzas y la presión</span>
+                <span class="course-badge-soon">Próximamente</span>
+            </div>
+        </div>
+        <div class="block-card block-card--disabled">
+            <span class="block-num">BL6</span>
+            <div class="block-info">
+                <span class="block-title">Energía</span>
+                <span class="course-badge-soon">Próximamente</span>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>
