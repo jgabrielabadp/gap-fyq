@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     Devuelto por:  GET /eso2/bl5/ejercicio
+                    GET /eso2/bl5  via th:replace en page.html
+     Intercambiado: hx-swap="outerHTML" sobre #tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <!-- Cabecera: badges de tipo + botón Siguiente -->
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º ESO &middot; BL5</span>
+            <span th:if="${ejercicio.energyType.name() == 'ENERGY_UNITS'}"
+                  class="badge badge-energia-unidades">Conversión de unidades</span>
+            <span th:if="${ejercicio.energyType.name() == 'WORK_AND_POWER' and ejercicio.unknownVariable != 'potencia'}"
+                  class="badge badge-trabajo">Trabajo mecánico</span>
+            <span th:if="${ejercicio.energyType.name() == 'WORK_AND_POWER' and ejercicio.unknownVariable == 'potencia'}"
+                  class="badge badge-trabajo">Potencia</span>
+            <span th:if="${ejercicio.energyType.name() == 'KINETIC_POTENTIAL' and ejercicio.unknownVariable == 'energia_cinetica'}"
+                  class="badge badge-cinetica">Energía cinética</span>
+            <span th:if="${ejercicio.energyType.name() == 'KINETIC_POTENTIAL' and ejercicio.unknownVariable != 'energia_cinetica'}"
+                  class="badge badge-cinetica">Energía potencial</span>
+            <span th:if="${ejercicio.energyType.name() == 'SUSTAINABILITY_TEST'}"
+                  class="badge badge-sostenibilidad">Sostenibilidad</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso2/bl5/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado del ejercicio.</p>
+    </div>
+
+    <!-- Zona de respuesta (condicional según exerciseMode) -->
+    <div id="form-area" class="form-area">
+
+        <!-- ── Respuesta numérica (ENERGY_UNITS, WORK_AND_POWER, KINETIC_POTENTIAL) ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'NUMERICAL'}">
+            <form th:attr="hx-post=@{/eso2/bl5/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="input-group">
+                    <input type="text" name="respuesta" class="answer-input"
+                           placeholder="Escribe tu respuesta…" autocomplete="off" required>
+                    <span class="answer-unit" th:text="${ejercicio.answerUnit}">unidad</span>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+                <p class="hint">Usa coma (,) o punto (.) como separador decimal.</p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+        <!-- ── Tipo test (SUSTAINABILITY_TEST) ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'MULTIPLE_CHOICE'}">
+            <div class="options-grid">
+                <th:block th:each="opt,stat : ${ejercicio.options}">
+                    <form th:attr="hx-post=@{/eso2/bl5/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                          hx-target="#form-area"
+                          hx-swap="innerHTML"
+                          class="option-form">
+                        <input type="hidden" name="respuesta" th:value="${stat.index}">
+                        <button type="submit" class="option-btn">
+                            <span class="option-letter"
+                                  th:text="${stat.index == 0 ? 'A' :
+                                            stat.index == 1 ? 'B' :
+                                            stat.index == 2 ? 'C' : 'D'}">A</span>
+                            <span class="option-text" th:text="${opt}">Texto de la opción</span>
+                        </button>
+                    </form>
+                </th:block>
+            </div>
+        </th:block>
+
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     Devuelto por:  POST /eso2/bl5/ejercicio/{id}/comprobar
+     Intercambiado: hx-swap="innerHTML" sobre #form-area
+     Variables de modelo: correcto (boolean), ejercicio
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <!-- Veredicto -->
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <!-- Respuesta correcta (solo al fallar) -->
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <!-- Explicación / resolución -->
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.exerciseMode == 'NUMERICAL'} ? 'Resolución paso a paso' : 'Justificación'">
+                Explicación
+            </summary>
+            <div th:class="${ejercicio.exerciseMode == 'MULTIPLE_CHOICE'} ? 'explanation explanation--prose' : 'explanation'"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <!-- Botón Siguiente -->
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso2/bl5/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
