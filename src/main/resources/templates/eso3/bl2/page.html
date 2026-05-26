@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL2 · La materia')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/eso3" class="breadcrumb-link">3º ESO</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL2</span>
+        </nav>
+        <h1 class="page-title">3º ESO &mdash; Bloque 2: La materia</h1>
+        <p class="page-subtitle">Porcentaje en masa &middot; Concentración en g/L &middot; Leyes de los gases</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{eso3/bl2/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>

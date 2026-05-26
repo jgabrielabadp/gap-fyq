@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     Devuelto por:  GET /eso3/bl2/ejercicio
+                    GET /eso3/bl2  via th:replace en page.html
+     Intercambiado: hx-swap="outerHTML" sobre #tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <!-- Cabecera: badges de tipo + botón Siguiente -->
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">3º ESO &middot; BL2</span>
+            <span th:if="${ejercicio.matterType.name() == 'MASS_PERCENTAGE'}"
+                  class="badge badge-porcentaje">% en masa</span>
+            <span th:if="${ejercicio.matterType.name() == 'VOLUME_CONCENT_GL'}"
+                  class="badge badge-concentracion">Concentración (g/L)</span>
+            <span th:if="${ejercicio.matterType.name() == 'GAS_LAWS_ADVANCED'}"
+                  class="badge badge-gases">Leyes de los gases</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso3/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado del ejercicio.</p>
+    </div>
+
+    <!-- Zona de respuesta numérica -->
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/eso3/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="Escribe tu respuesta…" autocomplete="off" required>
+                <span class="answer-unit" th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">Usa coma (,) o punto (.) como separador decimal.</p>
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     Devuelto por:  POST /eso3/bl2/ejercicio/{id}/comprobar
+     Intercambiado: hx-swap="innerHTML" sobre #form-area
+     Variables de modelo: correcto (boolean), ejercicio
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <!-- Veredicto -->
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <!-- Respuesta correcta (solo al fallar) -->
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:text="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <!-- Resolución paso a paso -->
+        <details class="explanation-details" open>
+            <summary class="explanation-title">Resolución paso a paso</summary>
+            <div class="explanation" th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <!-- Botón Siguiente -->
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso3/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
