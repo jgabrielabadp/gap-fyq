@@ -17,4 +17,9 @@ public class HomeController {
     public String eso2() {
         return "eso2/index";
     }
+
+    @GetMapping("/eso3")
+    public String eso3() {
+        return "eso3/index";
+    }
 }
