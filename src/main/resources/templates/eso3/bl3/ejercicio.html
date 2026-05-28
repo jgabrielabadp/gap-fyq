@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     Devuelto por:  GET /eso3/bl3/ejercicio
+                    GET /eso3/bl3  via th:replace en page.html
+     Intercambiado: hx-swap="outerHTML" sobre #tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <!-- Cabecera: badges de tipo + botón Siguiente -->
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">3º ESO &middot; BL3</span>
+            <span th:if="${ejercicio.changeType.name() == 'EQUATION_BALANCING'}"
+                  class="badge badge-ajuste">Ajuste de ecuaciones</span>
+            <span th:if="${ejercicio.changeType.name() == 'LAVOISIER_LAW'}"
+                  class="badge badge-lavoisier">Ley de Lavoisier</span>
+            <span th:if="${ejercicio.changeType.name() == 'BASIC_STOICHIOMETRY'}"
+                  class="badge badge-estequiometria">Estequiometría</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso3/bl3/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado del ejercicio.</p>
+    </div>
+
+    <!-- ── AJUSTE DE ECUACIONES ─────────────────────────────────────────── -->
+    <div id="form-area" class="form-area"
+         th:if="${ejercicio.changeType.name() == 'EQUATION_BALANCING'}">
+
+        <p class="hint">Introduce los coeficientes en orden, separados por comas (ej: <code>1,3,2</code>).</p>
+
+        <!-- Inputs visuales con etiquetas KaTeX -->
+        <div class="coeff-row">
+            <th:block th:each="label, stat : ${ejercicio.getCoefficientLabelList()}">
+                <div class="coeff-cell">
+                    <input type="number" min="1" class="coeff-input"
+                           th:id="'coeff-' + ${stat.index}"
+                           th:placeholder="${stat.index + 1}"
+                           autocomplete="off">
+                    <span class="coeff-label" th:utext="'\(' + ${label} + '\)'">fórmula</span>
+                </div>
+                <span class="coeff-sep"
+                      th:if="${!stat.last}"
+                      th:text="${stat.index == 0 || stat.index == (ejercicio.coefficientCount - 2) ? '+' : '+'}">+</span>
+            </th:block>
+        </div>
+
+        <!-- Formulario que recoge los inputs como cadena separada por comas -->
+        <form th:attr="hx-post=@{/eso3/bl3/ejercicio/{id}/comprobar(id=${ejercicio.id})},data-count=${ejercicio.coefficientCount}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form coeff-form">
+            <input type="hidden" name="respuesta" id="respuesta-coeff">
+            <button type="submit" class="btn btn-primary"
+                    onclick="collectCoefficients(this.form)">Validar</button>
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+    <!-- ── LAVOISIER Y ESTEQUIOMETRÍA (respuesta numérica) ──────────────── -->
+    <div id="form-area" class="form-area"
+         th:unless="${ejercicio.changeType.name() == 'EQUATION_BALANCING'}">
+        <form th:attr="hx-post=@{/eso3/bl3/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="Escribe tu respuesta…" autocomplete="off" required>
+                <span class="answer-unit" th:text="${ejercicio.answerUnit}">g</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">Usa coma (,) o punto (.) como separador decimal. Redondea a 2 decimales.</p>
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     Devuelto por:  POST /eso3/bl3/ejercicio/{id}/comprobar
+     Intercambiado: hx-swap="innerHTML" sobre #form-area
+     Variables de modelo: correcto (boolean), ejercicio
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <!-- Veredicto -->
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <!-- Respuesta correcta (solo al fallar) -->
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:if="${ejercicio.changeType.name() == 'EQUATION_BALANCING'}"
+                    th:text="${ejercicio.correctCoefficients}">coeficientes</strong>
+            <strong th:unless="${ejercicio.changeType.name() == 'EQUATION_BALANCING'}"
+                    th:text="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <!-- Resolución paso a paso -->
+        <details class="explanation-details" open>
+            <summary class="explanation-title">Resolución paso a paso</summary>
+            <div class="explanation" th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <!-- Botón Siguiente -->
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso3/bl3/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+
+<!-- Script local para recoger coeficientes de inputs separados -->
+<script>
+function collectCoefficients(form) {
+    var count = parseInt(form.dataset.count, 10);
+    var values = [];
+    for (var i = 0; i < count; i++) {
+        var input = document.getElementById('coeff-' + i);
+        values.push(input ? input.value.trim() : '');
+    }
+    document.getElementById('respuesta-coeff').value = values.join(',');
+}
+</script>
+
+</body>
+</html>
