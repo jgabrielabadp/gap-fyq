@@ -27,4 +27,9 @@ public class HomeController {
     public String eso4() {
         return "eso4/index";
     }
+
+    @GetMapping("/1bach")
+    public String firstBach() {
+        return "1bach/index";
+    }
 }
