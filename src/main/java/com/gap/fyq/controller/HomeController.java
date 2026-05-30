@@ -22,4 +22,9 @@ public class HomeController {
     public String eso3() {
         return "eso3/index";
     }
+
+    @GetMapping("/eso4")
+    public String eso4() {
+        return "eso4/index";
+    }
 }
