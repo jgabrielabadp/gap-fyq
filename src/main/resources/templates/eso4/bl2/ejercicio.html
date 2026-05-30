@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     Devuelto por:  GET /eso4/bl2/ejercicio
+                    GET /eso4/bl2  via th:replace en page.html
+     Intercambiado: hx-swap="outerHTML" sobre #tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <!-- Cabecera: badges de tipo + botón Siguiente -->
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">4º ESO &middot; BL2</span>
+            <span th:if="${ejercicio.matterType.name() == 'ELECTRONIC_CONFIGURATION'}"
+                  class="badge badge-conversion">Config. Electrónica</span>
+            <span th:if="${ejercicio.matterType.name() == 'ISOTOPE_MASS_CALCULATION'}"
+                  class="badge badge-porcentaje">Masa Atómica Media</span>
+            <span th:if="${ejercicio.matterType.name() == 'CHEMICAL_BOND_PROPERTIES'}"
+                  class="badge badge-grafica">Tipos de Enlace</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso4/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado del ejercicio.</p>
+    </div>
+
+    <!-- Zona de respuesta (condicional según exerciseMode) -->
+    <div id="form-area" class="form-area">
+
+        <!-- ── Tipo test (CHEMICAL_BOND_PROPERTIES) ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'MULTIPLE_CHOICE'}">
+            <div class="options-grid">
+                <th:block th:each="opt,stat : ${ejercicio.options}">
+                    <form th:attr="hx-post=@{/eso4/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                          hx-target="#form-area"
+                          hx-swap="innerHTML"
+                          class="option-form">
+                        <input type="hidden" name="respuesta" th:value="${stat.index}">
+                        <button type="submit" class="option-btn">
+                            <span class="option-letter"
+                                  th:text="${stat.index == 0 ? 'A' :
+                                            stat.index == 1 ? 'B' :
+                                            stat.index == 2 ? 'C' : 'D'}">A</span>
+                            <span class="option-text" th:text="${opt}">Texto de la opción</span>
+                        </button>
+                    </form>
+                </th:block>
+            </div>
+        </th:block>
+
+        <!-- ── Texto libre (ELECTRONIC_CONFIGURATION) ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'TEXT'}">
+            <form th:attr="hx-post=@{/eso4/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="input-group input-group--wide">
+                    <input type="text" name="respuesta" class="answer-input answer-input--wide"
+                           placeholder="Ej: 1s2 2s2 2p6 3s1"
+                           autocomplete="off" spellcheck="false" required>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+                <p class="hint">
+                    Usa la notación estándar con espacios (p.ej. <code>1s2 2s2 2p6</code>).
+                    Se admiten superíndices Unicode (1s² 2s² 2p⁶) y mayúsculas/minúsculas.
+                </p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+        <!-- ── Respuesta numérica (ISOTOPE_MASS_CALCULATION) ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'NUMERICAL'}">
+            <form th:attr="hx-post=@{/eso4/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="input-group">
+                    <input type="text" name="respuesta" class="answer-input"
+                           placeholder="Escribe tu respuesta…" autocomplete="off" required>
+                    <span class="answer-unit"
+                          th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                          th:text="${ejercicio.answerUnit}">u</span>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+                <p class="hint">Usa coma (,) o punto (.) como separador decimal. Redondea a 2 decimales.</p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     Devuelto por:  POST /eso4/bl2/ejercicio/{id}/comprobar
+     Intercambiado: hx-swap="innerHTML" sobre #form-area
+     Variables de modelo: correcto (boolean), ejercicio
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <!-- Veredicto -->
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <!-- Respuesta correcta (solo al fallar) -->
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <!-- Explicación / resolución -->
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.exerciseMode == 'MULTIPLE_CHOICE'} ?
+                         'Justificación' :
+                         (${ejercicio.exerciseMode == 'TEXT'} ?
+                             'Diagrama de Möller paso a paso' :
+                             'Resolución paso a paso')">
+                Explicación
+            </summary>
+            <div th:class="${ejercicio.exerciseMode == 'MULTIPLE_CHOICE'} ?
+                           'explanation explanation--prose' : 'explanation'"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <!-- Botón Siguiente -->
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso4/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
