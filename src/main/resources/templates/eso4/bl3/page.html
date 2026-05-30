@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL3 · Los cambios')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/eso4" class="breadcrumb-link">4º ESO</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL3</span>
+        </nav>
+        <h1 class="page-title">4º ESO &mdash; Bloque 3: Los cambios</h1>
+        <p class="page-subtitle">Mol y Avogadro &middot; Gas ideal y Molaridad &middot; Reactivo limitante</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{eso4/bl3/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>
