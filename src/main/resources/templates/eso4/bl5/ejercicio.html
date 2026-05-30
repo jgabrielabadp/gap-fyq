@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">4º ESO &middot; BL5</span>
+            <span th:if="${ejercicio.energyType.name() == 'MECHANICAL_ENERGY_LOSS'}"
+                  class="badge badge-vector">Energía Mecánica</span>
+            <span th:if="${ejercicio.energyType.name() == 'THERMOCHEMISTRY_CALC'}"
+                  class="badge badge-error">Termoquímica</span>
+            <span th:if="${ejercicio.energyType.name() == 'WAVE_PROPERTIES'}"
+                  class="badge badge-conversion">Ondas</span>
+        </div>
+        <button class="btn btn-ghost"
+                hx-get="/eso4/bl5/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/eso4/bl5/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       th:placeholder="${ejercicio.unknownVariable == 'frecuencia_luz'} ?
+                           'Ej: 6e14 o 6x10^14' : 'Escribe tu respuesta…'"
+                       autocomplete="off" spellcheck="false" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint"
+               th:text="${ejercicio.unknownVariable == 'frecuencia_luz'} ?
+                   'Usa notación científica: p.ej. 6e14 o 6x10^14.' :
+                   'Usa coma (,) o punto (.) como separador decimal. Redondea a 2 decimales.'">
+                Indicación.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.energyType.name() == 'THERMOCHEMISTRY_CALC'} ?
+                         'Cálculo del calor de reacción' : 'Resolución paso a paso'">
+                Resolución
+            </summary>
+            <div class="explanation" th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/eso4/bl5/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
