@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL8 · Energía')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/1bach" class="breadcrumb-link">1º Bach.</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL8</span>
+        </nav>
+        <h1 class="page-title">1º Bach. &mdash; Bloque 8: Energía</h1>
+        <p class="page-subtitle">Trabajo-energía &middot; Oscilador armónico &middot; Trabajo en campos eléctricos</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{1bach/bl8/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>
