@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">1º Bach. &middot; BL8</span>
+
+            <!-- WORK_ENERGY_THEOREM -->
+            <span th:if="${ejercicio.energyType.name() == 'WORK_ENERGY_THEOREM'
+                          and ejercicio.unknownVariable == 'trabajo_neto'}"
+                  class="badge badge-vector">Trabajo neto</span>
+            <span th:if="${ejercicio.energyType.name() == 'WORK_ENERGY_THEOREM'
+                          and ejercicio.unknownVariable == 'distancia_frenada'}"
+                  class="badge badge-grafica">Frenado</span>
+            <span th:if="${ejercicio.energyType.name() == 'WORK_ENERGY_THEOREM'
+                          and ejercicio.unknownVariable == 'trabajo_disipado'}"
+                  class="badge badge-error">Rozamiento</span>
+
+            <!-- HARMONIC_OSCILLATOR_ENERGY -->
+            <span th:if="${ejercicio.energyType.name() == 'HARMONIC_OSCILLATOR_ENERGY'
+                          and ejercicio.unknownVariable == 'energia_cinetica'}"
+                  class="badge badge-conversion">MAS &mdash; Eₕ</span>
+            <span th:if="${ejercicio.energyType.name() == 'HARMONIC_OSCILLATOR_ENERGY'
+                          and ejercicio.unknownVariable == 'energia_potencial'}"
+                  class="badge badge-conversion">MAS &mdash; Eₚ</span>
+
+            <!-- ELECTRIC_POTENTIAL_WORK -->
+            <span th:if="${ejercicio.energyType.name() == 'ELECTRIC_POTENTIAL_WORK'}"
+                  class="badge badge-error">Campo E &mdash; W</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/1bach/bl8/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/1bach/bl8/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="Escribe tu respuesta…"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+
+            <!-- Hint diferenciado -->
+            <p class="hint"
+               th:if="${ejercicio.energyType.name() != 'ELECTRIC_POTENTIAL_WORK'}">
+                Usa coma (,) o punto (.) decimal.
+                Redondea a <strong>2 decimales</strong>. Tolerancia: ±2 %.
+            </p>
+            <p class="hint"
+               th:if="${ejercicio.energyType.name() == 'ELECTRIC_POTENTIAL_WORK'}">
+                Redondea a 2 decimales. Si el resultado es muy grande o pequeño,
+                usa <strong>notación científica</strong>: ej. <code>2.00e-4</code>
+                o <code>-6e-4</code>. Tolerancia: ±2 %.
+            </p>
+
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.energyType.name() == 'WORK_ENERGY_THEOREM'} ?
+                         'Resolución mediante el Teorema trabajo–energía' :
+                         (${ejercicio.energyType.name() == 'HARMONIC_OSCILLATOR_ENERGY'} ?
+                             'Balance energético en el Movimiento Armónico Simple' :
+                             'Trabajo de fuerzas eléctricas: W = q·ΔV')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/1bach/bl8/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
