@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">1º Bach. &middot; BL4</span>
+
+            <span th:if="${ejercicio.thermochemistryType.name() == 'REACTION_ENTHALPY'}"
+                  class="badge badge-conversion">Entalpía de Reacción</span>
+
+            <span th:if="${ejercicio.thermochemistryType.name() == 'GIBBS_SPONTANEITY_CALC'}"
+                  class="badge badge-vector">Energía de Gibbs</span>
+
+            <span th:if="${ejercicio.thermochemistryType.name() == 'CONCEPTUAL_SPONTANEITY'}"
+                  class="badge badge-grafica">Espontaneidad</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/1bach/bl4/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <!-- Tabla ΔH°f (solo REACTION_ENTHALPY) -->
+    <div class="table-wrapper"
+         th:if="${ejercicio.dataTableHtml != null and !ejercicio.dataTableHtml.isEmpty()}"
+         th:utext="${ejercicio.dataTableHtml}">
+    </div>
+
+    <div id="form-area" class="form-area">
+
+        <!-- ── Entalpía de reacción: valor numérico ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'NUMERICAL'}">
+            <form th:attr="hx-post=@{/1bach/bl4/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="input-group">
+                    <input type="text" name="respuesta" class="answer-input"
+                           placeholder="ΔH°r en kJ/mol…"
+                           autocomplete="off" required>
+                    <span class="answer-unit">kJ/mol</span>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+                <p class="hint">
+                    Usa coma (,) o punto (.) como decimal. Redondea a <strong>2 decimales</strong>.
+                    Incluye el signo (negativo para reacciones exotérmicas). Tolerancia: ±2 %.
+                </p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+        <!-- ── Gibbs combinado: valor ΔG + selección espontaneidad ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'GIBBS_COMBINED'}">
+            <form th:attr="hx-post=@{/1bach/bl4/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+
+                <div class="input-group">
+                    <input type="text" name="respuesta" class="answer-input"
+                           placeholder="ΔG en kJ…"
+                           autocomplete="off" required>
+                    <span class="answer-unit">kJ</span>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+
+                <div class="mc-options" style="margin-top:0.75rem;">
+                    <label class="mc-label">
+                        <input type="radio" name="espontaneidad" value="0" required>
+                        Espontánea (ΔG &lt; 0)
+                    </label>
+                    <label class="mc-label">
+                        <input type="radio" name="espontaneidad" value="1">
+                        No espontánea (ΔG &gt; 0)
+                    </label>
+                    <label class="mc-label">
+                        <input type="radio" name="espontaneidad" value="2">
+                        En equilibrio (ΔG ≈ 0)
+                    </label>
+                </div>
+
+                <p class="hint">
+                    Recuerda: ΔS debe convertirse de J/K a kJ/K (÷ 1000) y la temperatura
+                    de °C a K (+ 273,15). Redondea ΔG a 2 decimales.
+                </p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+        <!-- ── Opción múltiple: espontaneidad conceptual ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'MULTIPLE_CHOICE'}">
+            <form th:attr="hx-post=@{/1bach/bl4/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="mc-options">
+                    <label class="mc-label" th:each="opt,i : ${ejercicio.options}">
+                        <input type="radio" name="respuesta"
+                               th:value="${i.index}" required>
+                        <span th:text="${opt}">opción</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:0.75rem;">
+                    Validar
+                </button>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <!-- Feedback detallado para GIBBS_COMBINED -->
+        <th:block th:if="${ejercicio.exerciseMode == 'GIBBS_COMBINED'}">
+            <div class="verdict-detail"
+                 th:unless="${correcto}">
+                <span th:if="${correctoGibbs != null}">
+                    ΔG numérico:
+                    <strong th:text="${correctoGibbs} ? '✓ correcto' : '✗ incorrecto'">–</strong>
+                    &nbsp;|&nbsp;
+                    Espontaneidad:
+                    <strong th:text="${correctoEspontaneidad} ? '✓ correcta' : '✗ incorrecta'">–</strong>
+                </span>
+            </div>
+            <div class="correct-answer" th:unless="${correcto}">
+                <span>Respuesta correcta:&nbsp;</span>
+                <strong th:text="${ejercicio.correctAnswerDisplay}">ΔG</strong>
+                &nbsp;&nbsp;→&nbsp;&nbsp;
+                <strong th:text="${ejercicio.spontaneityLabel}">espontaneidad</strong>
+            </div>
+        </th:block>
+
+        <!-- Respuesta correcta para NUMERICAL y MULTIPLE_CHOICE -->
+        <th:block th:unless="${ejercicio.exerciseMode == 'GIBBS_COMBINED'}">
+            <div class="correct-answer" th:unless="${correcto}">
+                <span>Respuesta correcta:&nbsp;</span>
+                <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+            </div>
+        </th:block>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.thermochemistryType.name() == 'REACTION_ENTHALPY'} ?
+                         'Cálculo de ΔH°r mediante la Ley de Hess' :
+                         (${ejercicio.thermochemistryType.name() == 'GIBBS_SPONTANEITY_CALC'} ?
+                             'Cálculo de ΔG y criterio de espontaneidad de Gibbs' :
+                             'Razonamiento sobre criterios cualitativos de espontaneidad')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/1bach/bl4/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
