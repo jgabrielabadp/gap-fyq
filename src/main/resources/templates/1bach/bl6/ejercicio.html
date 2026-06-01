@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">1º Bach. &middot; BL6</span>
+
+            <!-- Aceleración intrínseca: badge según incógnita -->
+            <span th:if="${ejercicio.kinematicsType.name() == 'INTRINSIC_ACCELERATION'
+                          and ejercicio.unknownVariable == 'at'}"
+                  class="badge badge-vector">Acel. Tangencial</span>
+            <span th:if="${ejercicio.kinematicsType.name() == 'INTRINSIC_ACCELERATION'
+                          and ejercicio.unknownVariable == 'an'}"
+                  class="badge badge-vector">Acel. Normal</span>
+            <span th:if="${ejercicio.kinematicsType.name() == 'INTRINSIC_ACCELERATION'
+                          and ejercicio.unknownVariable == 'a_total'}"
+                  class="badge badge-vector">Acel. Total</span>
+
+            <!-- Proyectil -->
+            <span th:if="${ejercicio.kinematicsType.name() == 'PROJECTILE_MOTION'
+                          and ejercicio.unknownVariable == 'tiempo_vuelo'}"
+                  class="badge badge-error">Tiempo de Vuelo</span>
+            <span th:if="${ejercicio.kinematicsType.name() == 'PROJECTILE_MOTION'
+                          and ejercicio.unknownVariable == 'alcance'}"
+                  class="badge badge-error">Alcance</span>
+            <span th:if="${ejercicio.kinematicsType.name() == 'PROJECTILE_MOTION'
+                          and ejercicio.unknownVariable == 'velocidad_final'}"
+                  class="badge badge-error">Velocidad Final</span>
+            <span th:if="${ejercicio.kinematicsType.name() == 'PROJECTILE_MOTION'
+                          and ejercicio.unknownVariable == 'altura_max'}"
+                  class="badge badge-error">Altura Máxima</span>
+
+            <!-- MCUA -->
+            <span th:if="${ejercicio.kinematicsType.name() == 'ROTATIONAL_MCUA'}"
+                  class="badge badge-grafica">MCUA</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/1bach/bl6/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/1bach/bl6/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="Escribe tu respuesta…"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Usa coma (,) o punto (.) como decimal.
+                Redondea a <strong>2 decimales</strong>. Tolerancia: ±2 %.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.kinematicsType.name() == 'INTRINSIC_ACCELERATION'} ?
+                         'Cálculo de las componentes intrínsecas de la aceleración' :
+                         (${ejercicio.kinematicsType.name() == 'PROJECTILE_MOTION'} ?
+                             'Resolución por descomposición en ejes X e Y' :
+                             'Aplicación de las ecuaciones cinemáticas del MCUA')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/1bach/bl6/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
