@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">1º Bach. &middot; BL7</span>
+
+            <span th:if="${ejercicio.dynamicsType.name() == 'CONNECTED_BODIES'
+                          and ejercicio.unknownVariable == 'aceleracion'}"
+                  class="badge badge-vector">Aceleración</span>
+            <span th:if="${ejercicio.dynamicsType.name() == 'CONNECTED_BODIES'
+                          and ejercicio.unknownVariable == 'tension'}"
+                  class="badge badge-vector">Tensión</span>
+
+            <span th:if="${ejercicio.dynamicsType.name() == 'MOMENTUM_CONSERVATION'}"
+                  class="badge badge-conversion">Conservación p̄</span>
+
+            <span th:if="${ejercicio.dynamicsType.name() == 'FIELD_FORCES_COMPARISON'
+                          and ejercicio.unknownVariable == 'fuerza_gravitatoria'}"
+                  class="badge badge-grafica">Ley de Newton</span>
+            <span th:if="${ejercicio.dynamicsType.name() == 'FIELD_FORCES_COMPARISON'
+                          and ejercicio.unknownVariable == 'fuerza_coulomb'}"
+                  class="badge badge-error">Ley de Coulomb</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/1bach/bl7/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/1bach/bl7/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="Escribe tu respuesta…"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+
+            <!-- Hint diferenciado por tipo -->
+            <p class="hint"
+               th:if="${ejercicio.dynamicsType.name() != 'FIELD_FORCES_COMPARISON'}">
+                Usa coma (,) o punto (.) decimal.
+                Redondea a <strong>2 decimales</strong>. Tolerancia: ±2 %.
+            </p>
+            <p class="hint"
+               th:if="${ejercicio.dynamicsType.name() == 'FIELD_FORCES_COMPARISON'}">
+                Redondea a 2 decimales. Si el resultado es muy grande o pequeño,
+                usa <strong>notación científica</strong>: ej. <code>1.98e20</code> o <code>3.27e-7</code>.
+                Tolerancia: ±2 %.
+            </p>
+
+            <div class="htmx-indicator spinner">Comprobando…</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.dynamicsType.name() == 'CONNECTED_BODIES'} ?
+                         'Resolución vectorial por las Leyes de Newton' :
+                         (${ejercicio.dynamicsType.name() == 'MOMENTUM_CONSERVATION'} ?
+                             'Aplicación de la conservación del momento lineal' :
+                             'Cálculo mediante Ley de Newton o Coulomb')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/1bach/bl7/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
