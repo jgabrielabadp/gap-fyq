@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">1º Bach. &middot; BL2</span>
+
+            <!-- Fórmula molecular empírica -->
+            <span th:if="${ejercicio.chemistryType.name() == 'EMPIRICAL_MOLECULAR_FORMULA'}"
+                  class="badge badge-conversion">Fórmula Molecular</span>
+
+            <!-- Disoluciones -->
+            <span th:if="${ejercicio.chemistryType.name() == 'ADVANCED_SOLUTIONS'
+                          and ejercicio.unknownVariable == 'molalidad'}"
+                  class="badge badge-vector">Molalidad</span>
+            <span th:if="${ejercicio.chemistryType.name() == 'ADVANCED_SOLUTIONS'
+                          and ejercicio.unknownVariable == 'fraccion_molar'}"
+                  class="badge badge-vector">Fracción Molar</span>
+
+            <!-- Gases Dalton -->
+            <span th:if="${ejercicio.chemistryType.name() == 'GAS_MIXTURES_DALTON'
+                          and ejercicio.unknownVariable == 'presion_parcial_A'}"
+                  class="badge badge-grafica">Presión Parcial</span>
+            <span th:if="${ejercicio.chemistryType.name() == 'GAS_MIXTURES_DALTON'
+                          and ejercicio.unknownVariable == 'presion_parcial_B'}"
+                  class="badge badge-grafica">Presión Parcial</span>
+            <span th:if="${ejercicio.chemistryType.name() == 'GAS_MIXTURES_DALTON'
+                          and ejercicio.unknownVariable == 'presion_total'}"
+                  class="badge badge-grafica">Ley de Dalton</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/1bach/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+
+        <!-- ── Fórmula molecular: input de texto libre ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'FORMULA'}">
+            <form th:attr="hx-post=@{/1bach/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="input-group input-group--wide">
+                    <input type="text" name="respuesta" class="answer-input answer-input--wide"
+                           placeholder="Ej: C6H12O6"
+                           autocomplete="off" spellcheck="false" required>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+                <p class="hint">
+                    Introduce la fórmula molecular usando letras y números como subíndices
+                    (ej: <code>C6H12O6</code>). También se aceptan subíndices Unicode (C₆H₁₂O₆).
+                    El orden de los elementos no importa.
+                </p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+        <!-- ── Respuesta numérica: molalidad, fracción molar, presiones ── -->
+        <th:block th:if="${ejercicio.exerciseMode == 'NUMERICAL'}">
+            <form th:attr="hx-post=@{/1bach/bl2/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+                  hx-target="#form-area"
+                  hx-swap="innerHTML"
+                  class="answer-form">
+                <div class="input-group">
+                    <input type="text" name="respuesta" class="answer-input"
+                           placeholder="Escribe tu respuesta…"
+                           autocomplete="off" required>
+                    <span class="answer-unit"
+                          th:if="${ejercicio.answerUnit != null
+                                  and !ejercicio.answerUnit.isEmpty()
+                                  and ejercicio.answerUnit != '—'}"
+                          th:text="${ejercicio.answerUnit}">unidad</span>
+                    <button type="submit" class="btn btn-primary">Validar</button>
+                </div>
+                <p class="hint">
+                    Usa coma (,) o punto (.) como separador decimal.
+                    Redondea a <strong>3 cifras significativas</strong>.
+                    Tolerancia: ±2 %.
+                </p>
+                <div class="htmx-indicator spinner">Comprobando…</div>
+            </form>
+        </th:block>
+
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span th:text="${ejercicio.exerciseMode == 'FORMULA'} ?
+                'Fórmula correcta: ' : 'Respuesta correcta: '">Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.chemistryType.name() == 'EMPIRICAL_MOLECULAR_FORMULA'} ?
+                         'Desglose paso a paso: fórmula empírica → molecular' :
+                         (${ejercicio.chemistryType.name() == 'ADVANCED_SOLUTIONS'} ?
+                             'Resolución detallada de la disolución' :
+                             'Aplicación de la Ley de Dalton y gases ideales')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/1bach/bl2/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
