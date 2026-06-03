@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º Bach. &middot; BL1</span>
+
+            <!-- Mecánica orbital -->
+            <span th:if="${ejercicio.gravitationalType.name() == 'ORBITAL_MECHANICS'
+                          and ejercicio.unknownVariable == 'v_orbital'}"
+                  class="badge badge-vector">Velocidad Orbital</span>
+            <span th:if="${ejercicio.gravitationalType.name() == 'ORBITAL_MECHANICS'
+                          and ejercicio.unknownVariable == 'T_orbital'}"
+                  class="badge badge-vector">Período Orbital</span>
+            <span th:if="${ejercicio.gravitationalType.name() == 'ORBITAL_MECHANICS'
+                          and ejercicio.unknownVariable == 'E_mecanica'}"
+                  class="badge badge-vector">Energía Mecánica</span>
+
+            <!-- Velocidad de escape / trabajo -->
+            <span th:if="${ejercicio.gravitationalType.name() == 'ESCAPE_VELOCITY_WORK'
+                          and ejercicio.unknownVariable == 'v_escape'}"
+                  class="badge badge-error">Velocidad de Escape</span>
+            <span th:if="${ejercicio.gravitationalType.name() == 'ESCAPE_VELOCITY_WORK'
+                          and ejercicio.unknownVariable == 'trabajo_orbital'}"
+                  class="badge badge-error">Trabajo Orbital</span>
+
+            <!-- Campo y potencial -->
+            <span th:if="${ejercicio.gravitationalType.name() == 'FIELD_POTENTIAL_POINTS'
+                          and ejercicio.unknownVariable == 'potencial_V'}"
+                  class="badge badge-grafica">Potencial V</span>
+            <span th:if="${ejercicio.gravitationalType.name() == 'FIELD_POTENTIAL_POINTS'
+                          and ejercicio.unknownVariable == 'campo_g'}"
+                  class="badge badge-grafica">Campo |g|</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/2bach/bl1/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/2bach/bl1/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="p.ej. -1.47e10 ó 3.45e3"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Usa notación científica simplificada: <strong>-1.47e10</strong> ó <strong>3.45e3</strong>.
+                Puedes usar coma como decimal. Tolerancia: &#177;2&nbsp;%.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.gravitationalType.name() == 'ORBITAL_MECHANICS'} ?
+                         'Resolución completa: mecánica orbital y energía ligada' :
+                         (${ejercicio.gravitationalType.name() == 'ESCAPE_VELOCITY_WORK'} ?
+                             'Resolución: velocidad de escape / trabajo externo' :
+                             'Resolución: superposición de campo y potencial gravitatorio')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/2bach/bl1/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>

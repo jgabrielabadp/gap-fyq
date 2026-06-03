@@ -32,4 +32,9 @@ public class HomeController {
     public String firstBach() {
         return "1bach/index";
     }
+
+    @GetMapping("/2bach")
+    public String secondBach() {
+        return "2bach/index";
+    }
 }
