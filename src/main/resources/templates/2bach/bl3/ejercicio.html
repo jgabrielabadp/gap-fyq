@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º Bach. &middot; BL3</span>
+
+            <!-- MAS -->
+            <span th:if="${ejercicio.wavesType.name() == 'HARMONIC_OSCILLATOR'
+                          and ejercicio.unknownVariable == 'frecuencia_angular'}"
+                  class="badge badge-vector">Frec. angular &omega;</span>
+            <span th:if="${ejercicio.wavesType.name() == 'HARMONIC_OSCILLATOR'
+                          and ejercicio.unknownVariable == 'constante_elastica'}"
+                  class="badge badge-vector">Constante k</span>
+            <span th:if="${ejercicio.wavesType.name() == 'HARMONIC_OSCILLATOR'
+                          and ejercicio.unknownVariable == 'periodo'}"
+                  class="badge badge-vector">Período T</span>
+            <span th:if="${ejercicio.wavesType.name() == 'HARMONIC_OSCILLATOR'
+                          and ejercicio.unknownVariable == 'velocidad_maxima'}"
+                  class="badge badge-vector">Vel. máxima</span>
+            <span th:if="${ejercicio.wavesType.name() == 'HARMONIC_OSCILLATOR'
+                          and ejercicio.unknownVariable == 'energia_mecanica'}"
+                  class="badge badge-vector">Energía E</span>
+
+            <!-- Ecuación de onda -->
+            <span th:if="${ejercicio.wavesType.name() == 'WAVE_EQUATION'
+                          and ejercicio.unknownVariable == 'longitud_onda'}"
+                  class="badge badge-grafica">Long. onda &lambda;</span>
+            <span th:if="${ejercicio.wavesType.name() == 'WAVE_EQUATION'
+                          and ejercicio.unknownVariable == 'periodo'}"
+                  class="badge badge-grafica">Período T</span>
+            <span th:if="${ejercicio.wavesType.name() == 'WAVE_EQUATION'
+                          and ejercicio.unknownVariable == 'velocidad_onda'}"
+                  class="badge badge-grafica">Vel. onda v</span>
+            <span th:if="${ejercicio.wavesType.name() == 'WAVE_EQUATION'
+                          and ejercicio.unknownVariable == 'desfase'}"
+                  class="badge badge-grafica">Desfase &Delta;&phi;</span>
+            <span th:if="${ejercicio.wavesType.name() == 'WAVE_EQUATION'
+                          and ejercicio.unknownVariable == 'elongacion'}"
+                  class="badge badge-grafica">Elongación y</span>
+
+            <!-- Acústica / Doppler -->
+            <span th:if="${ejercicio.wavesType.name() == 'ACOUSTICS_DOPPLER'
+                          and ejercicio.unknownVariable == 'nivel_sonoro'}"
+                  class="badge badge-error">Nivel dB</span>
+            <span th:if="${ejercicio.wavesType.name() == 'ACOUSTICS_DOPPLER'
+                          and ejercicio.unknownVariable == 'frecuencia_doppler'}"
+                  class="badge badge-error">Efecto Doppler</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/2bach/bl3/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <!-- Aviso RAD solo en ecuación de onda / elongación -->
+    <div th:if="${ejercicio.wavesType.name() == 'WAVE_EQUATION'
+                 and ejercicio.unknownVariable == 'elongacion'}"
+         class="hint hint--warning">
+        &#9888; Configura tu calculadora en modo <strong>RAD</strong> (radianes) para este ejercicio.
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/2bach/bl3/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="p.ej. 20 ó 3.14e-3 ó 89.01"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Usa punto o coma decimal. Notación científica: <strong>3.14e-3</strong>.
+                Tolerancia: &#177;2&nbsp;%.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.wavesType.name() == 'HARMONIC_OSCILLATOR'} ?
+                         'Resolución: ecuaciones cinemáticas del MAS' :
+                         (${ejercicio.wavesType.name() == 'WAVE_EQUATION'} ?
+                             'Resolución: ecuación de onda viajera (modo RAD)' :
+                             'Resolución: intensidad sonora / efecto Doppler')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/2bach/bl3/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
