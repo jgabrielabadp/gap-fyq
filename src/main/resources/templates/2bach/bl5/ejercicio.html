@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º Bach. &middot; BL5</span>
+
+            <!-- Efecto fotoeléctrico -->
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'PHOTOELECTRIC_EFFECT'
+                          and ejercicio.unknownVariable == 'frecuencia_umbral'}"
+                  class="badge badge-grafica">Frec. umbral f&#8320;</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'PHOTOELECTRIC_EFFECT'
+                          and ejercicio.unknownVariable == 'energia_cinetica'}"
+                  class="badge badge-grafica">Energ. cinética E&#8342;</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'PHOTOELECTRIC_EFFECT'
+                          and ejercicio.unknownVariable == 'potencial_frenado'}"
+                  class="badge badge-grafica">Potencial V&#7523;&#7511;&#7548;&#7548;</span>
+
+            <!-- De Broglie / Lorentz -->
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'DE_BROGLIE_RELATIVITY'
+                          and ejercicio.unknownVariable == 'longitud_deBroglie'}"
+                  class="badge badge-vector">De Broglie &#955;</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'DE_BROGLIE_RELATIVITY'
+                          and ejercicio.unknownVariable == 'factor_lorentz'}"
+                  class="badge badge-vector">Factor &#947;</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'DE_BROGLIE_RELATIVITY'
+                          and ejercicio.unknownVariable == 'tiempo_dilatado'}"
+                  class="badge badge-vector">Dilatación t</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'DE_BROGLIE_RELATIVITY'
+                          and ejercicio.unknownVariable == 'longitud_contraida'}"
+                  class="badge badge-vector">Contracción L</span>
+
+            <!-- Radiactividad -->
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'RADIOACTIVE_DECAY'
+                          and ejercicio.unknownVariable == 'constante_lambda'}"
+                  class="badge badge-error">Constante &#955;</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'RADIOACTIVE_DECAY'
+                          and ejercicio.unknownVariable == 'actividad_inicial'}"
+                  class="badge badge-error">Actividad A&#8320;</span>
+            <span th:if="${ejercicio.modernPhysicsType.name() == 'RADIOACTIVE_DECAY'
+                          and ejercicio.unknownVariable == 'masa_remanente'}"
+                  class="badge badge-error">Masa m(t)</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/2bach/bl5/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/2bach/bl5/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="p.ej. 3.07e-19 ó 1.25 ó 0.75"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Usa notación científica: <strong>3.07e-19</strong> ó <strong>1.04e15</strong>.
+                Admite coma decimal. Tolerancia: &#177;2&nbsp;%.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.modernPhysicsType.name() == 'PHOTOELECTRIC_EFFECT'} ?
+                         'Resolución: balance energético de Einstein (E&#8342; = hf − W&#8320;)' :
+                         (${ejercicio.modernPhysicsType.name() == 'DE_BROGLIE_RELATIVITY'} ?
+                             'Resolución: hipótesis de De Broglie / transformaciones de Lorentz' :
+                             'Resolución: ley de desintegración radiactiva N(t) = N&#8320;·e&#8315;&#8407;&#7511;')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/2bach/bl5/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
