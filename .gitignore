@@ -111,7 +111,8 @@ fabric.properties
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -182,3 +183,7 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/maven,intellij+all,windows,linux,macos
+/FISICA Y QUIMICA_BACH.pdf
+/FISICA Y QUIMICA_ESO.pdf
+/Fisica-2BACH.pdf
+/Quimica-2BACH.pdf
