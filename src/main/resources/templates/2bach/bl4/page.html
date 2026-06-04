@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL4 · Óptica')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/2bach" class="breadcrumb-link">2º Bach.</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL4</span>
+        </nav>
+        <h1 class="page-title">2º Bach. &mdash; Bloque 4: Óptica</h1>
+        <p class="page-subtitle">Ley de Snell &middot; Lentes delgadas (convenio DIN) &middot; Corrección visual</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{2bach/bl4/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>
