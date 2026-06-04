@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º Bach. &middot; BL4</span>
+
+            <!-- Snell -->
+            <span th:if="${ejercicio.opticsType.name() == 'SNELL_REFRACTION_LIMIT'
+                          and ejercicio.unknownVariable == 'angulo_refraccion'}"
+                  class="badge badge-grafica">Refracción &theta;</span>
+            <span th:if="${ejercicio.opticsType.name() == 'SNELL_REFRACTION_LIMIT'
+                          and ejercicio.unknownVariable == 'velocidad_medio'}"
+                  class="badge badge-grafica">Velocidad v</span>
+            <span th:if="${ejercicio.opticsType.name() == 'SNELL_REFRACTION_LIMIT'
+                          and ejercicio.unknownVariable == 'angulo_limite'}"
+                  class="badge badge-grafica">Ángulo límite</span>
+
+            <!-- Lentes -->
+            <span th:if="${ejercicio.opticsType.name() == 'GEOMETRIC_LENSES'
+                          and ejercicio.unknownVariable == 'posicion_imagen'}"
+                  class="badge badge-vector">Posición s&prime;</span>
+            <span th:if="${ejercicio.opticsType.name() == 'GEOMETRIC_LENSES'
+                          and ejercicio.unknownVariable == 'aumento_lateral'}"
+                  class="badge badge-vector">Aumento m</span>
+            <span th:if="${ejercicio.opticsType.name() == 'GEOMETRIC_LENSES'
+                          and ejercicio.unknownVariable == 'tamanyo_imagen'}"
+                  class="badge badge-vector">Tamaño y&prime;</span>
+
+            <!-- Ojo / dioptrías -->
+            <span th:if="${ejercicio.opticsType.name() == 'EYE_DEFECTS_DIOPTERS'}"
+                  class="badge badge-error">Dioptrías P</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/2bach/bl4/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:text="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+        <form th:attr="hx-post=@{/2bach/bl4/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="p.ej. 19.47 ó -12.00 ó 2e8"
+                       autocomplete="off" required>
+                <span class="answer-unit"
+                      th:if="${ejercicio.answerUnit != null and !ejercicio.answerUnit.isEmpty()}"
+                      th:text="${ejercicio.answerUnit}">unidad</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Incluye el signo si el resultado es negativo.
+                Coma o punto como decimal. Tolerancia: &#177;2&nbsp;%.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+    </div>
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:utext="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.opticsType.name() == 'SNELL_REFRACTION_LIMIT'} ?
+                         'Resolución: ley de Snell y ángulo límite de reflexión total' :
+                         (${ejercicio.opticsType.name() == 'GEOMETRIC_LENSES'} ?
+                             'Resolución: ecuación de conjugación (convenio DIN)' :
+                             'Resolución: corrección óptica del ojo en dioptrías')">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/2bach/bl4/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
