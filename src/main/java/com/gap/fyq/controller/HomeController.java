@@ -37,4 +37,9 @@ public class HomeController {
     public String secondBach() {
         return "2bach/index";
     }
+
+    @GetMapping("/2bach-q")
+    public String secondBachChemistry() {
+        return "2bach-q/index";
+    }
 }
