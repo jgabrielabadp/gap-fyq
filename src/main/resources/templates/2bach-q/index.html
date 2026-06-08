@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('2º Bach. Química')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">2º Bach. Qu&#237;mica</span>
+        </nav>
+        <h1 class="page-title">2º Bachillerato &mdash; Qu&#237;mica</h1>
+        <p class="page-subtitle">Selecciona un bloque tem&#225;tico</p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div class="block-list">
+        <a href="/2bach-q/bl1" class="block-card block-card--active">
+            <span class="block-num">BL1</span>
+            <div class="block-info">
+                <span class="block-title">Estructura de la materia y enlace qu&#237;mico</span>
+                <span class="block-desc">
+                    Configuraci&#243;n electr&#243;nica &middot; N&#250;meros cu&#225;nticos &middot;
+                    Propiedades peri&#243;dicas &middot; Geometr&#237;a molecular TRPEV
+                </span>
+            </div>
+        </a>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>

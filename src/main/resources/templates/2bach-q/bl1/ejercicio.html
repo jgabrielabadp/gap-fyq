@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º Bach. Q &middot; BL1</span>
+
+            <!-- Config. electrónica -->
+            <span th:if="${ejercicio.exerciseMode == 'CONFIG_TEXT'}"
+                  class="badge badge-grafica">Config. electrónica</span>
+
+            <!-- Números cuánticos MCQ -->
+            <span th:if="${ejercicio.exerciseMode == 'QUANTUM_MCQ'}"
+                  class="badge badge-vector">N&#250;meros cu&#225;nticos</span>
+
+            <!-- Propiedades periódicas MCQ -->
+            <span th:if="${ejercicio.exerciseMode == 'PERIODIC_MCQ'}"
+                  class="badge badge-error">Propiedades peri&#243;dicas</span>
+
+            <!-- Geometría molecular TRPEV -->
+            <span th:if="${ejercicio.exerciseMode == 'GEOMETRY_MULTI'}"
+                  class="badge badge-info">TRPEV &middot; Geometr&#237;a</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/2bach-q/bl1/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:utext="${ejercicio.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+
+        <!-- ── CONFIG_TEXT: campo de texto libre ──────────────────────── -->
+        <form th:if="${ejercicio.exerciseMode == 'CONFIG_TEXT'}"
+              th:attr="hx-post=@{/2bach-q/bl1/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input answer-input--wide"
+                       placeholder="Ej: 1s2 2s2 2p6 3s1"
+                       autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Formato: subniveles separados por espacio ordenados por <em>n</em>.
+                Admite superíndices Unicode (²) y caret (^2). No uses corchetes.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+        <!-- ── QUANTUM_MCQ / PERIODIC_MCQ: radio buttons ─────────────── -->
+        <form th:if="${ejercicio.exerciseMode == 'QUANTUM_MCQ' or ejercicio.exerciseMode == 'PERIODIC_MCQ'}"
+              th:attr="hx-post=@{/2bach-q/bl1/ejercicio/{id}/comprobar(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="mcq-options">
+                <label class="mcq-option">
+                    <input type="radio" name="respuesta" value="A" required>
+                    <span th:text="${ejercicio.optionA}">Opción A</span>
+                </label>
+                <label class="mcq-option">
+                    <input type="radio" name="respuesta" value="B">
+                    <span th:text="${ejercicio.optionB}">Opción B</span>
+                </label>
+                <label class="mcq-option">
+                    <input type="radio" name="respuesta" value="C">
+                    <span th:text="${ejercicio.optionC}">Opción C</span>
+                </label>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+        <!-- ── GEOMETRY_MULTI: cuatro campos ─────────────────────────── -->
+        <form th:if="${ejercicio.exerciseMode == 'GEOMETRY_MULTI'}"
+              th:attr="hx-post=@{/2bach-q/bl1/ejercicio/{id}/comprobar-geometria(id=${ejercicio.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+
+            <div class="geometry-fields">
+                <div class="field-row">
+                    <label class="field-label" for="hibridacion">Hibridaci&#243;n del &#225;tomo central:</label>
+                    <input id="hibridacion" type="text" name="hibridacion"
+                           class="answer-input answer-input--short"
+                           placeholder="sp3" autocomplete="off" required>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label" for="paresEnlazantes">Pares no enlazantes en el &#225;tomo central:</label>
+                    <input id="paresEnlazantes" type="number" name="paresEnlazantes"
+                           class="answer-input answer-input--tiny"
+                           min="0" max="6" placeholder="0" required>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label" for="geometria">Geometr&#237;a molecular:</label>
+                    <input id="geometria" type="text" name="geometria"
+                           class="answer-input answer-input--wide"
+                           placeholder="tetra&#233;drica" autocomplete="off" required>
+                </div>
+
+                <div class="field-row">
+                    <label class="field-label">Car&#225;cter de la mol&#233;cula:</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="polaridad" value="polar" required>
+                            <span>Polar</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="polaridad" value="apolar">
+                            <span>Apolar</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary">Validar todo</button>
+            </div>
+            <p class="hint">
+                Geometr&#237;as admitidas: lineal, trigonal plana, tetra&#233;drica,
+                piramidal trigonal, angular, bipiramidal trigonal, octa&#233;drica.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+    </div><!-- #form-area -->
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:text="${ejercicio.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ejercicio.structureLinkType.name() == 'QUANTUM_NUMBERS_CONFIG'
+                                 and ejercicio.exerciseMode == 'CONFIG_TEXT'} ?
+                                 'Resolución: principio de Aufbau y reglas de Pauli y Hund' :
+                               (${ejercicio.structureLinkType.name() == 'QUANTUM_NUMBERS_CONFIG'
+                                 and ejercicio.exerciseMode == 'QUANTUM_MCQ'} ?
+                                 'Resolución: números cuánticos del último electrón' :
+                               (${ejercicio.structureLinkType.name() == 'PERIODIC_PROPERTIES'} ?
+                                 'Resolución: tendencias periódicas y carga nuclear efectiva' :
+                                 'Resolución: TRPEV — geometría e hibridación molecular'))">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ejercicio.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/2bach-q/bl1/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
