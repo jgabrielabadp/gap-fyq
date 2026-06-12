@@ -183,25 +183,16 @@
 
         <details class="explanation-details" open>
             <summary class="explanation-title"
-                     th:text="${ex.exerciseMode == 'PH_STRONG_ACID'} ?
-                                 'Resolución: pH de ácido fuerte (disociación total)' :
-                               (${ex.exerciseMode == 'PH_STRONG_BASE'} ?
-                                 'Resolución: pH de base fuerte vía pOH y Kw' :
-                               (${ex.exerciseMode == 'PH_WEAK_ACID'} ?
-                                 'Resolución: equilibrio ácido débil — Ka y tabla ICE' :
-                               (${ex.exerciseMode == 'PH_WEAK_BASE'} ?
-                                 'Resolución: equilibrio base débil — Kb, pOH y Kw' :
-                               (${ex.exerciseMode == 'ALPHA_WEAK_ACID'} ?
-                                 'Resolución: grado de ionización α = [H⁺]eq / C₀' :
-                               (${ex.exerciseMode == 'REDOX_OXIDATION_STATE'} ?
-                                 'Resolución: reglas de números de oxidación' :
-                               (${ex.exerciseMode == 'REDOX_COEFFICIENTS'} ?
-                                 'Resolución: método del ion-electrón paso a paso' :
-                               (${ex.exerciseMode == 'REDOX_OXIDANT_TEXT'} ?
-                                 'Resolución: identificación de oxidante y reductor' :
-                               (${ex.exerciseMode == 'FARADAY_EMF'} ?
-                                 'Resolución: E° = E°cátodo − E°ánodo' :
-                                 'Resolución: 1ª ley de Faraday — masa depositada')))))))))">
+                     th:text="${ex.exerciseMode == 'PH_STRONG_ACID'    ? 'Resolución: pH de ácido fuerte (disociación total)' :
+                                ex.exerciseMode == 'PH_STRONG_BASE'    ? 'Resolución: pH de base fuerte vía pOH y Kw' :
+                                ex.exerciseMode == 'PH_WEAK_ACID'      ? 'Resolución: equilibrio ácido débil Ka y tabla ICE' :
+                                ex.exerciseMode == 'PH_WEAK_BASE'      ? 'Resolución: equilibrio base débil Kb, pOH y Kw' :
+                                ex.exerciseMode == 'ALPHA_WEAK_ACID'   ? 'Resolución: grado de ionización alfa' :
+                                ex.exerciseMode == 'REDOX_OXIDATION_STATE' ? 'Resolución: reglas de números de oxidación' :
+                                ex.exerciseMode == 'REDOX_COEFFICIENTS'    ? 'Resolución: método del ion-electrón paso a paso' :
+                                ex.exerciseMode == 'REDOX_OXIDANT_TEXT'    ? 'Resolución: identificación de oxidante y reductor' :
+                                ex.exerciseMode == 'FARADAY_EMF'           ? 'Resolución: FEM (E cátodo - E ánodo)' :
+                                                                             'Resolución: 1a ley de Faraday, masa depositada'}">
                 Resolución
             </summary>
             <div class="explanation explanation--prose"

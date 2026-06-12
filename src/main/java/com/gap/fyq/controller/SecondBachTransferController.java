@@ -15,7 +15,9 @@ public class SecondBachTransferController {
     private final SecondBachTransferService service;
 
     @GetMapping
-    public String page() {
+    public String page(Model model) {
+        SecondBachTransferExercise ex = service.generateAndSave();
+        model.addAttribute("ex", ex);
         return "2bach-q/bl4/page";
     }
 
