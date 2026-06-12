@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL3 · Equilibrio Químico')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/2bach-q" class="breadcrumb-link">2º Bach. Química</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL3</span>
+        </nav>
+        <h1 class="page-title">2º Bach. Química &mdash; Bloque 3: Equilibrio Químico</h1>
+        <p class="page-subtitle">
+            K<sub>c</sub> y K<sub>p</sub> &middot; Grado de disociaci&#243;n &alpha; &middot;
+            Le Chatelier &middot; Solubilidad e ion com&#250;n
+        </p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{2bach-q/bl3/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>
