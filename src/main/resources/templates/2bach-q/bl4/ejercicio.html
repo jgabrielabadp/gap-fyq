@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: tarjeta
+     ═══════════════════════════════════════════════════════════ -->
+<div id="tarjeta" th:fragment="tarjeta" class="card">
+
+    <div class="card-header">
+        <div class="card-meta">
+            <span class="badge badge-curso">2º Bach. Q &middot; BL4</span>
+
+            <!-- pH ácido-base -->
+            <span th:if="${ex.exerciseMode == 'PH_STRONG_ACID'}"
+                  class="badge badge-vector">pH Ácido fuerte</span>
+            <span th:if="${ex.exerciseMode == 'PH_STRONG_BASE'}"
+                  class="badge badge-vector">pH Base fuerte</span>
+            <span th:if="${ex.exerciseMode == 'PH_WEAK_ACID'}"
+                  class="badge badge-info">pH Ácido débil (K<sub>a</sub>)</span>
+            <span th:if="${ex.exerciseMode == 'PH_WEAK_BASE'}"
+                  class="badge badge-info">pH Base débil (K<sub>b</sub>)</span>
+            <span th:if="${ex.exerciseMode == 'ALPHA_WEAK_ACID'}"
+                  class="badge badge-grafica">Grado de ionizaci&#243;n &alpha;</span>
+
+            <!-- Redox -->
+            <span th:if="${ex.exerciseMode == 'REDOX_OXIDATION_STATE'}"
+                  class="badge badge-error">N.O. elemento</span>
+            <span th:if="${ex.exerciseMode == 'REDOX_COEFFICIENTS'}"
+                  class="badge badge-error">Coeficientes redox</span>
+            <span th:if="${ex.exerciseMode == 'REDOX_OXIDANT_TEXT'}"
+                  class="badge badge-error">Oxidante / Reductor</span>
+
+            <!-- Electroquímica -->
+            <span th:if="${ex.exerciseMode == 'FARADAY_EMF'}"
+                  class="badge badge-grafica">Pila galvánica E°</span>
+            <span th:if="${ex.exerciseMode == 'FARADAY_MASS'}"
+                  class="badge badge-grafica">Electr&#243;lisis &mdash; masa</span>
+        </div>
+
+        <button class="btn btn-ghost"
+                hx-get="/2bach-q/bl4/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente &#8594;
+        </button>
+    </div>
+
+    <div class="statement-area">
+        <p class="statement" th:utext="${ex.statement}">Enunciado.</p>
+    </div>
+
+    <div id="form-area" class="form-area">
+
+        <!-- ── Modos numéricos: pH + alpha + EMF + masa electrólisis ── -->
+        <form th:if="${ex.exerciseMode == 'PH_STRONG_ACID'
+                    or ex.exerciseMode == 'PH_STRONG_BASE'
+                    or ex.exerciseMode == 'PH_WEAK_ACID'
+                    or ex.exerciseMode == 'PH_WEAK_BASE'
+                    or ex.exerciseMode == 'ALPHA_WEAK_ACID'
+                    or ex.exerciseMode == 'FARADAY_EMF'
+                    or ex.exerciseMode == 'FARADAY_MASS'}"
+              th:attr="hx-post=@{/2bach-q/bl4/ejercicio/{id}/comprobar(id=${ex.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input answer-input--short"
+                       th:placeholder="${ex.unit}"
+                       autocomplete="off" required>
+                <span class="input-unit" th:text="${ex.unit}">—</span>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint" th:if="${ex.exerciseMode == 'PH_STRONG_ACID'
+                                  or ex.exerciseMode == 'PH_STRONG_BASE'}">
+                Introduce el pH con dos decimales. Margen: 1&nbsp;%.
+            </p>
+            <p class="hint" th:if="${ex.exerciseMode == 'PH_WEAK_ACID'
+                                  or ex.exerciseMode == 'PH_WEAK_BASE'}">
+                Calcula [H⁺] o [OH⁻] resolviendo el equilibrio y aplica pH = &minus;log[H⁺].
+                Margen: 1&nbsp;%.
+            </p>
+            <p class="hint" th:if="${ex.exerciseMode == 'ALPHA_WEAK_ACID'}">
+                Introduce &alpha; como tanto por uno (p.&nbsp;ej.&nbsp;<code>0.042</code>).
+                Margen: 1&nbsp;%.
+            </p>
+            <p class="hint" th:if="${ex.exerciseMode == 'FARADAY_EMF'}">
+                E&#176;<sub>celda</sub> = E&#176;<sub>c&#225;todo</sub> &minus;
+                E&#176;<sub>&#225;nodo</sub>. Resultado en V con dos decimales. Margen: 1&nbsp;%.
+            </p>
+            <p class="hint" th:if="${ex.exerciseMode == 'FARADAY_MASS'}">
+                Usa m = (M &middot; I &middot; t) / (n &middot; F).
+                Resultado en g con dos decimales. Margen: 1&nbsp;%.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+        <!-- ── Número de oxidación: entero con signo ── -->
+        <form th:if="${ex.exerciseMode == 'REDOX_OXIDATION_STATE'}"
+              th:attr="hx-post=@{/2bach-q/bl4/ejercicio/{id}/comprobar(id=${ex.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input answer-input--short"
+                       placeholder="+6 ó -2"
+                       autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Escribe el n&#250;mero de oxidaci&#243;n con signo: <code>+7</code>, <code>-2</code>, etc.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+        <!-- ── Coeficientes redox: separados por | ── -->
+        <form th:if="${ex.exerciseMode == 'REDOX_COEFFICIENTS'}"
+              th:attr="hx-post=@{/2bach-q/bl4/ejercicio/{id}/comprobar(id=${ex.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="input-group">
+                <input type="text" name="respuesta" class="answer-input"
+                       placeholder="p.ej.  1|5|8|1|5|4"
+                       autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <p class="hint">
+                Introduce los coeficientes enteros en el orden indicado, separados por
+                <code>|</code> (barra vertical), sin espacios.
+            </p>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+        <!-- ── Oxidante / Reductor: MCQ A/B/C ── -->
+        <form th:if="${ex.exerciseMode == 'REDOX_OXIDANT_TEXT'}"
+              th:attr="hx-post=@{/2bach-q/bl4/ejercicio/{id}/comprobar(id=${ex.id})}"
+              hx-target="#form-area"
+              hx-swap="innerHTML"
+              class="answer-form">
+            <div class="mcq-options">
+                <label class="mcq-option">
+                    <input type="radio" name="respuesta" value="A" required>
+                    <span th:text="${ex.optionA}">Opci&#243;n A</span>
+                </label>
+                <label class="mcq-option">
+                    <input type="radio" name="respuesta" value="B">
+                    <span th:text="${ex.optionB}">Opci&#243;n B</span>
+                </label>
+                <label class="mcq-option">
+                    <input type="radio" name="respuesta" value="C">
+                    <span th:text="${ex.optionC}">Opci&#243;n C</span>
+                </label>
+            </div>
+            <div class="input-group">
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+            <div class="htmx-indicator spinner">Comprobando&hellip;</div>
+        </form>
+
+    </div><!-- #form-area -->
+
+</div><!-- #tarjeta -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     FRAGMENTO: resultado
+     ═══════════════════════════════════════════════════════════ -->
+<div th:fragment="resultado">
+
+    <div th:class="${correcto} ? 'resultado resultado-correcto' : 'resultado resultado-incorrecto'">
+
+        <div class="verdict">
+            <span class="verdict-icon" th:text="${correcto} ? '✓' : '✗'">✓</span>
+            <strong class="verdict-text"
+                    th:text="${correcto} ? '¡Correcto!' : 'Incorrecto'">!</strong>
+        </div>
+
+        <div class="correct-answer" th:unless="${correcto}">
+            <span>Respuesta correcta:&nbsp;</span>
+            <strong th:text="${ex.correctAnswerDisplay}">respuesta</strong>
+        </div>
+
+        <details class="explanation-details" open>
+            <summary class="explanation-title"
+                     th:text="${ex.exerciseMode == 'PH_STRONG_ACID'} ?
+                                 'Resolución: pH de ácido fuerte (disociación total)' :
+                               (${ex.exerciseMode == 'PH_STRONG_BASE'} ?
+                                 'Resolución: pH de base fuerte vía pOH y Kw' :
+                               (${ex.exerciseMode == 'PH_WEAK_ACID'} ?
+                                 'Resolución: equilibrio ácido débil — Ka y tabla ICE' :
+                               (${ex.exerciseMode == 'PH_WEAK_BASE'} ?
+                                 'Resolución: equilibrio base débil — Kb, pOH y Kw' :
+                               (${ex.exerciseMode == 'ALPHA_WEAK_ACID'} ?
+                                 'Resolución: grado de ionización α = [H⁺]eq / C₀' :
+                               (${ex.exerciseMode == 'REDOX_OXIDATION_STATE'} ?
+                                 'Resolución: reglas de números de oxidación' :
+                               (${ex.exerciseMode == 'REDOX_COEFFICIENTS'} ?
+                                 'Resolución: método del ion-electrón paso a paso' :
+                               (${ex.exerciseMode == 'REDOX_OXIDANT_TEXT'} ?
+                                 'Resolución: identificación de oxidante y reductor' :
+                               (${ex.exerciseMode == 'FARADAY_EMF'} ?
+                                 'Resolución: E° = E°cátodo − E°ánodo' :
+                                 'Resolución: 1ª ley de Faraday — masa depositada')))))))))">
+                Resolución
+            </summary>
+            <div class="explanation explanation--prose"
+                 th:utext="${ex.explanation}">explicación</div>
+        </details>
+
+    </div>
+
+    <div class="next-area">
+        <button class="btn btn-primary"
+                hx-get="/2bach-q/bl4/ejercicio"
+                hx-target="#tarjeta"
+                hx-swap="outerHTML">
+            Siguiente ejercicio &#8594;
+        </button>
+    </div>
+
+</div><!-- resultado -->
+
+</body>
+</html>
