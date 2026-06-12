@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/chrome :: head('BL4 · Transferencia: Ácido-Base y Redox')}"></head>
+<body>
+
+<header class="page-header">
+    <div class="page-header-inner">
+        <nav class="breadcrumb">
+            <a href="/" class="breadcrumb-link">Inicio</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <a href="/2bach-q" class="breadcrumb-link">2º Bach. Química</a>
+            <span class="breadcrumb-sep">&#8250;</span>
+            <span class="breadcrumb-current">BL4</span>
+        </nav>
+        <h1 class="page-title">2º Bach. Química &mdash; Bloque 4: Reacciones de Transferencia</h1>
+        <p class="page-subtitle">
+            pH ácidos y bases &middot; K<sub>a</sub> / K<sub>b</sub> &middot;
+            Ajuste redox ion-electrón &middot; Pilas galvánicas y electrólisis (Faraday)
+        </p>
+    </div>
+</header>
+
+<main class="page-main">
+    <div th:replace="~{2bach-q/bl4/ejercicio :: tarjeta}"></div>
+</main>
+
+<th:block th:replace="~{fragments/chrome :: scripts}"></th:block>
+</body>
+</html>
